@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#6d5dfc" />
+  <title>Research Planner</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">PhD research portfolio</p>
+        <h1>Research Planner</h1>
+        <p class="subtitle">Keep one dissertation spine moving while side projects branch off only when their dependencies are ready.</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-secondary" id="resetProgressBtn" type="button">Reset saved progress</button>
+      </div>
+    </header>
+
+    <nav class="view-tabs" aria-label="Planner views">
+      <button class="tab is-active" type="button" data-view="map" aria-selected="true">Dependency map</button>
+      <button class="tab" type="button" data-view="timeline" aria-selected="false">Project calendar</button>
+      <button class="tab" type="button" data-view="focus" aria-selected="false">Current focus</button>
+    </nav>
+
+    <main>
+      <section class="view is-active" id="mapView" data-view-panel="map">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">What depends on what</p>
+            <h2>Project dependency map</h2>
+          </div>
+          <div class="legend" aria-label="Project type legend">
+            <span><i class="legend-dot main"></i>Main dissertation</span>
+            <span><i class="legend-dot piggyback"></i>Piggyback</span>
+            <span><i class="legend-dot application"></i>Application</span>
+          </div>
+        </div>
+
+        <div class="map-scroll" id="mapScroll">
+          <div class="dependency-canvas" id="dependencyCanvas">
+            <svg class="connector-layer" id="connectorLayer" aria-hidden="true"></svg>
+
+            <div class="branch-row branch-row-top">
+              <article class="project-card branch-card storage" data-project-id="storage" style="grid-column: 1 / span 2;">
+                <div class="project-type">Piggyback study</div>
+                <h3>❄️ Storage + handling stability</h3>
+                <p>Freeze-thaw tolerance, storage duration, aliquoting, and recovery.</p>
+                <span class="status-chip status-ready" data-status-for="storage">Ready soon</span>
+              </article>
+
+              <article class="project-card branch-card skin" data-project-id="skin" style="grid-column: 4 / span 2;">
+                <div class="project-type">Application project</div>
+                <h3>🩹 Skin dehiscence + scar repair</h3>
+                <p>Reuse the validated hydrogel/scaffold platform for wound closure and regenerative delivery.</p>
+                <span class="status-chip status-waiting" data-status-for="skin">Waiting on platform</span>
+              </article>
+            </div>
+
+            <div class="main-label">MAIN PROJECT</div>
+            <div class="main-spine" id="mainSpine">
+              <article class="project-card stage-card" data-project-id="stage-1" data-stage-id="stage-1">
+                <div class="stage-number">1</div>
+                <h3>NC-EV baseline</h3>
+                <p>Learn → produce → reproduce</p>
+                <span class="status-chip status-active" data-status-for="stage-1">Active now</span>
+              </article>
+              <div class="spine-arrow" aria-hidden="true">→</div>
+              <article class="project-card stage-card" data-project-id="stage-2" data-stage-id="stage-2">
+                <div class="stage-number">2</div>
+                <h3>Process + potency</h3>
+                <p>Characterize and optimize</p>
+                <span class="status-chip status-next" data-status-for="stage-2">Next</span>
+              </article>
+              <div class="spine-arrow" aria-hidden="true">→</div>
+              <article class="project-card stage-card" data-project-id="stage-3" data-stage-id="stage-3">
+                <div class="stage-number">3</div>
+                <h3>Hydrogel delivery</h3>
+                <p>Loading, retention, release</p>
+                <span class="status-chip status-waiting" data-status-for="stage-3">Waiting</span>
+              </article>
+              <div class="spine-arrow" aria-hidden="true">→</div>
+              <article class="project-card stage-card" data-project-id="stage-4" data-stage-id="stage-4">
+                <div class="stage-number">4</div>
+                <h3>Extrusion + printing</h3>
+                <p>Does printing alter NC-EVs?</p>
+                <span class="status-chip status-waiting" data-status-for="stage-4">Waiting</span>
+              </article>
+              <div class="spine-arrow" aria-hidden="true">→</div>
+              <article class="project-card stage-card" data-project-id="stage-5" data-stage-id="stage-5">
+                <div class="stage-number">5</div>
+                <h3>Scaffold integration</h3>
+                <p>Architecture + delivery</p>
+                <span class="status-chip status-waiting" data-status-for="stage-5">Waiting</span>
+              </article>
+              <div class="spine-arrow" aria-hidden="true">→</div>
+              <article class="project-card stage-card" data-project-id="stage-6" data-stage-id="stage-6">
+                <div class="stage-number">6</div>
+                <h3>Translation</h3>
+                <p>Application-specific studies</p>
+                <span class="status-chip status-parked" data-status-for="stage-6">Later</span>
+              </article>
+            </div>
+
+            <div class="branch-row branch-row-bottom">
+              <article class="project-card branch-card process" data-project-id="process" style="grid-column: 2 / span 2;">
+                <div class="project-type">Piggyback dataset</div>
+                <h3>📈 NC-EV process-quality dataset</h3>
+                <p>Every production batch adds process, yield, size, morphology, and potency data.</p>
+                <span class="status-chip status-active" data-status-for="process">Active now</span>
+              </article>
+
+              <article class="project-card branch-card poly" data-project-id="polytrauma" style="grid-column: 5 / span 2;">
+                <div class="project-type">Future application</div>
+                <h3>🦴 Polytrauma + spatial delivery</h3>
+                <p>Gradients, region-specific loading, and architecture-guided therapy.</p>
+                <span class="status-chip status-parked" data-status-for="polytrauma">Parked</span>
+              </article>
+            </div>
+          </div>
+        </div>
+
+        <aside class="detail-panel" id="detailPanel" aria-live="polite">
+          <div>
+            <p class="eyebrow">Selected project</p>
+            <h2 id="detailTitle">NC-EV baseline</h2>
+            <p id="detailSummary"></p>
+          </div>
+          <div class="detail-grid">
+            <div>
+              <span class="detail-label">Why it exists</span>
+              <p id="detailWhy"></p>
+            </div>
+            <div>
+              <span class="detail-label">Activation gate</span>
+              <p id="detailGate"></p>
+            </div>
+            <div>
+              <span class="detail-label">Suggested window</span>
+              <p id="detailWindow"></p>
+            </div>
+            <div>
+              <span class="detail-label">Uses material from</span>
+              <p id="detailParent"></p>
+            </div>
+          </div>
+          <div class="detail-bottom">
+            <div class="status-editor">
+              <label for="detailStatus">Status</label>
+              <select id="detailStatus">
+                <option value="active">Active now</option>
+                <option value="next">Next</option>
+                <option value="ready">Ready soon</option>
+                <option value="waiting">Waiting on dependency</option>
+                <option value="parked">Parked</option>
+                <option value="done">Done</option>
+              </select>
+            </div>
+            <div class="project-checklist-wrap">
+              <span class="detail-label">Milestones</span>
+              <div class="project-checklist" id="detailChecklist"></div>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="view" id="timelineView" data-view-panel="timeline">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">When things can happen</p>
+            <h2>Project calendar</h2>
+          </div>
+          <p class="section-note">This is a research sequencing calendar, not a promise that every stage must finish in exactly these months.</p>
+        </div>
+        <div class="timeline-scroll">
+          <div class="timeline" id="timeline"></div>
+        </div>
+      </section>
+
+      <section class="view" id="focusView" data-view-panel="focus">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">What deserves attention now</p>
+            <h2>Current focus</h2>
+          </div>
+        </div>
+        <div class="focus-grid">
+          <article class="focus-card primary-focus">
+            <span class="focus-label">MAIN ENGINE</span>
+            <h3>NC-EV baseline production</h3>
+            <p>Most wet-lab effort should move the dissertation spine. Right now that means getting reproducible NC-EV production and characterization working.</p>
+            <div id="mainFocusMilestones" class="mini-checklist"></div>
+          </article>
+          <article class="focus-card">
+            <span class="focus-label">PIGGYBACK</span>
+            <h3>Storage + handling</h3>
+            <p>Use aliquots from batches you were already making. Do not create a separate full production campaign for each storage condition.</p>
+            <div id="sideFocusMilestones" class="mini-checklist"></div>
+          </article>
+          <article class="focus-card">
+            <span class="focus-label">PASSIVE DATASET</span>
+            <h3>Process-quality relationships</h3>
+            <p>Record every batch consistently now so the dataset grows without needing a separate experiment later.</p>
+            <div id="dataFocusMilestones" class="mini-checklist"></div>
+          </article>
+          <article class="focus-card muted-focus">
+            <span class="focus-label">DESIGN ONLY FOR NOW</span>
+            <h3>Skin + polytrauma applications</h3>
+            <p>Literature review, requirements, and experimental planning are useful. Major bench work waits until the upstream delivery platform is ready.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Research Planner stores status and checklist progress in this browser only.</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
