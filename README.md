@@ -4,6 +4,8 @@
 
 A lightweight, editable research portfolio with a dependency map, calendar, and current-focus view. The original NC-EV dissertation and side projects remain the starting plan.
 
+The starting plan also includes a separate **NIAMS predictive bone-model literature review**. It is limited to evidence review and model definition, with no dependency on the NC-EV work and no wet-lab experiments in its current scope.
+
 ## Edit your plan
 
 - **Add project** creates a project with a title, type, status, descriptions, dates, and milestones.

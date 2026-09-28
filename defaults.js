@@ -232,3 +232,30 @@ const STATUS_LABELS = {
   done: "Done"
 };
 
+const NIAMS_REVIEW_PROJECT = {
+  id: "niams-literature-review",
+  title: "NIAMS predictive bone-model literature review",
+  short: "Define the minimum useful human bone-healing model",
+  type: "independent",
+  defaultStatus: "next",
+  status: "next",
+  summary: "Review human 3D bone and osteoinduction models to determine which biological and mechanical components are needed for a useful predictive model.",
+  why: "The immediate goal is to learn what has already been modeled, how closely those systems resemble human healing, and whether any have actually predicted later tissue or mechanical outcomes.",
+  gate: "Keep this as literature and model-definition work. Do not begin wet-lab experiments until the prediction target, minimum model, success criteria, and available resources are agreed with Botchwey and Hollister.",
+  window: "Literature review and decision memo only; no wet-lab work",
+  start: "2026-09",
+  end: "2026-12",
+  dependencies: [],
+  position: { x: 28, y: 718 },
+  milestones: [
+    "Define the review question and inclusion criteria",
+    "Search for human 3D bone-injury, callus, and osteoinduction models",
+    "Extract cell sources, donor counts, materials, geometry, immune components, and mechanical conditions",
+    "Record early and late biological, mineralization, and mechanical outcomes",
+    "Separate tissue-production studies from studies that test predictive performance",
+    "Compare models with relevant human tissue or clinical evidence where available",
+    "Identify the minimum required components and the additions that remain optional",
+    "Create an evidence table and focused bibliography",
+    "Draft a short model recommendation and unresolved questions for Botchwey and Hollister"
+  ]
+};

@@ -1,6 +1,7 @@
 const { clone, validate, reconcileMilestones, removeProject, arrange } = PlannerModel;
 const STORAGE_KEY = 'researchPlanner.v2';
 const LEGACY_KEY = 'researchPlanner.v1';
+const NIAMS_MIGRATION_KEY = 'researchPlanner.addedNiamsLiteratureReview.v1';
 const TYPE_LABELS = { main: 'Main dissertation', piggyback: 'Piggyback', application: 'Application', future: 'Future project', independent: 'Independent project' };
 const COLORS = { main: '#5b66d6', piggyback: '#2d9b73', application: '#c47f2a', future: '#9a6ac7', independent: '#27899d' };
 const $ = id => document.getElementById(id);
@@ -8,6 +9,16 @@ let startupMessage = '', storageBlocked = false;
 let state = loadState(), selectedProjectId = state.projects[0]?.id, editingId = null;
 let timelineYear = Number(state.projects.map(p => p.start).sort()[0]?.slice(0, 4)) || new Date().getFullYear();
 let history = [], drag = null;
+
+function niamsReviewProject() {
+  return { ...clone(NIAMS_REVIEW_PROJECT), milestones: NIAMS_REVIEW_PROJECT.milestones.map(text => ({ text, done: false })) };
+}
+function addNiamsReview(plan) {
+  const next = clone(plan);
+  const alreadyPresent = next.projects.some(p => p.id === NIAMS_REVIEW_PROJECT.id || /NIAMS.*literature review/i.test(p.title));
+  if (!alreadyPresent) next.projects.push(niamsReviewProject());
+  return validate(next);
+}
 
 function initialState(legacy = {}) {
   const date = index => { const d = new Date(2026, 8 + index, 1); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; };
@@ -22,13 +33,25 @@ function initialState(legacy = {}) {
       phases: row.phases?.map(f => ({ ...f, start: date(f.start), end: date(f.end) })),
       milestones: p.milestones.map((text, i) => ({ text, done: Boolean(legacy.checks?.[p.id]?.[i]) })) };
   });
+  projects.push(niamsReviewProject());
   return validate({ version: 2, projects });
 }
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
-      try { return validate(JSON.parse(raw)); }
+      try {
+        let loaded = validate(JSON.parse(raw));
+        if (!localStorage.getItem(NIAMS_MIGRATION_KEY)) {
+          loaded = addNiamsReview(loaded);
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(loaded));
+            localStorage.setItem(NIAMS_MIGRATION_KEY, '1');
+            startupMessage = 'Added the NIAMS predictive bone-model literature review to your plan.';
+          } catch { startupMessage = 'NIAMS literature review added for this session. Export the plan if browser saving remains unavailable.'; }
+        }
+        return loaded;
+      }
       catch { storageBlocked = true; startupMessage = 'Saved plan could not be read. It has not been overwritten. Showing the starting plan. Import a valid backup to replace the unreadable data.'; return initialState(); }
     }
     const legacy = localStorage.getItem(LEGACY_KEY);
@@ -39,7 +62,7 @@ function loadState() {
 function notice(message, error = false) { $('saveStatus').textContent = message; $('saveStatus').classList.toggle('is-error', error); }
 function saveState() {
   if (storageBlocked) { notice('Original saved data is protected. These changes are only in memory; use Export plan to keep them.', true); return; }
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); notice('Saved in this browser · Export plan for a backup or another device.'); }
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); localStorage.setItem(NIAMS_MIGRATION_KEY, '1'); notice('Saved in this browser · Export plan for a backup or another device.'); }
   catch { notice('Could not save to this browser. Use Export plan to keep your changes.', true); }
 }
 function commit(next, message) {

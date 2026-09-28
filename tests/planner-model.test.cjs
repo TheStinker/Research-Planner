@@ -43,16 +43,29 @@ function loadApp(saved = {}) {
 test('migrates existing status and checklist progress, preserving all scientific defaults', () => {
   const legacy = { status: { 'stage-1':'done' }, checks: { 'stage-1':[true,false,true] } };
   const app = loadApp({'researchPlanner.v1':JSON.stringify(legacy)});
-  const state = app.read('state'); assert.equal(state.projects.length, 10);
+  const state = app.read('state'); assert.equal(state.projects.length, 11);
   const first = state.projects.find(p => p.id === 'stage-1');
   assert.equal(first.status, 'done'); assert.equal(first.milestones[0].done, true); assert.equal(first.milestones[1].done, false);
   assert.deepEqual(state.projects.find(p => p.id === 'stage-2').dependencies, ['stage-1']);
   assert.deepEqual(JSON.parse(app.storage.get('researchPlanner.v1')), legacy);
   model.validate(state);
 });
+test('adds the NIAMS literature review once to an existing plan and respects later deletion', () => {
+  const prior = plan([project('existing')]);
+  const upgraded = loadApp({'researchPlanner.v2':JSON.stringify(prior)});
+  const state = upgraded.read('state');
+  assert.equal(state.projects.length, 2);
+  const niams = state.projects.find(p => p.id === 'niams-literature-review');
+  assert.equal(niams.status, 'next'); assert.deepEqual(niams.dependencies, []);
+  assert.match(niams.gate, /Do not begin wet-lab experiments/);
+  assert.equal(upgraded.storage.get('researchPlanner.addedNiamsLiteratureReview.v1'), '1');
+  const afterDeletion = plan([project('existing')]);
+  const reloaded = loadApp({'researchPlanner.v2':JSON.stringify(afterDeletion), 'researchPlanner.addedNiamsLiteratureReview.v1':'1'});
+  assert.deepEqual(reloaded.read('state'), afterDeletion);
+});
 test('reload retains complete edited plan and protects unreadable saved data', () => {
   const edited = plan([project('new')]); edited.projects[0].position = {x:555,y:777};
-  assert.deepEqual(loadApp({'researchPlanner.v2':JSON.stringify(edited)}).read('state'), edited);
+  assert.deepEqual(loadApp({'researchPlanner.v2':JSON.stringify(edited), 'researchPlanner.addedNiamsLiteratureReview.v1':'1'}).read('state'), edited);
   const broken = loadApp({'researchPlanner.v2':'broken json'});
   assert.equal(broken.read('storageBlocked'), true);
   assert.equal(broken.storage.get('researchPlanner.v2'), 'broken json');
