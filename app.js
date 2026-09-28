@@ -1,488 +1,245 @@
-const PROJECTS = {
-  "stage-1": {
-    id: "stage-1",
-    title: "NC-EV baseline",
-    short: "Learn → produce → reproduce",
-    type: "main",
-    defaultStatus: "active",
-    summary: "Establish a reproducible nitrogen-cavitation EV workflow before trying to optimize everything at once.",
-    why: "This is the foundation for every downstream study. If production is not reproducible, storage, hydrogel, printing, and biological comparisons become difficult to interpret.",
-    gate: "None. This is the current starting point.",
-    window: "Sep–Oct 2026",
-    parent: "Starting point",
-    milestones: [
-      "Complete NC training and capture the lab-specific SOP",
-      "Produce the first NC-MSC batch",
-      "Complete baseline particle characterization",
-      "Repeat the baseline batch under the same conditions",
-      "Define the minimum QC data recorded for every future batch"
-    ]
-  },
-  "stage-2": {
-    id: "stage-2",
-    title: "Process + potency",
-    short: "Characterize and optimize",
-    type: "main",
-    defaultStatus: "next",
-    summary: "Connect processing conditions to NC-EV yield, particle properties, morphology, and biological potency.",
-    why: "This is the process–structure–potency backbone of the dissertation and provides the evidence needed to choose production conditions intentionally.",
-    gate: "At least two interpretable baseline batches with a repeatable workflow.",
-    window: "Oct–Dec 2026",
-    parent: "NC-EV baseline",
-    milestones: [
-      "Select the first controlled process variable",
-      "Record input cell number, volumes, pressure, timing, recovery, and yield",
-      "Compare size distribution and morphology across conditions",
-      "Establish a baseline potency readout",
-      "Choose the production condition that moves into hydrogel studies"
-    ]
-  },
-  "stage-3": {
-    id: "stage-3",
-    title: "Hydrogel delivery",
-    short: "Loading, retention, release",
-    type: "main",
-    defaultStatus: "waiting",
-    summary: "Load optimized NC-EVs into a reproducible PEG or PEG-adjacent hydrogel and determine whether the material retains and releases functional vesicles.",
-    why: "This converts NC-EV production into a controllable delivery platform rather than a free-vesicle study.",
-    gate: "A selected NC-EV production condition with defined baseline QC and potency.",
-    window: "Jan–Feb 2027",
-    parent: "Process + potency",
-    milestones: [
-      "Select the first lab-established hydrogel formulation",
-      "Quantify loading efficiency and recovery",
-      "Run release kinetics",
-      "Compare free versus hydrogel-released NC-EVs",
-      "Confirm retained potency after encapsulation and release"
-    ]
-  },
-  "stage-4": {
-    id: "stage-4",
-    title: "Extrusion + printing",
-    short: "Does printing alter NC-EVs?",
-    type: "main",
-    defaultStatus: "waiting",
-    summary: "Determine whether injection and extrusion-based printing alter NC-EV recovery, physical properties, release, or potency.",
-    why: "This is the point where the work becomes specifically relevant to biofabrication rather than only EV-in-hydrogel delivery.",
-    gate: "A hydrogel formulation that reproducibly carries and releases potent NC-EVs.",
-    window: "Mar–Apr 2027",
-    parent: "Hydrogel delivery",
-    milestones: [
-      "Define unextruded, injected, and printed comparison groups",
-      "Record nozzle and process conditions",
-      "Measure post-processing particle recovery and size",
-      "Compare release profiles after processing",
-      "Compare potency after extrusion and printing"
-    ]
-  },
-  "stage-5": {
-    id: "stage-5",
-    title: "Scaffold integration",
-    short: "Architecture + delivery",
-    type: "main",
-    defaultStatus: "waiting",
-    summary: "Integrate the validated NC-EV hydrogel with architectural scaffolds and study how geometry and placement affect delivery.",
-    why: "This merges the Botchwey-style biological delivery question with the Hollister-style scaffold architecture question.",
-    gate: "Printing/extrusion conditions that preserve an acceptable NC-EV product and release profile.",
-    window: "Apr–May 2027",
-    parent: "Extrusion + printing",
-    milestones: [
-      "Choose a first scaffold architecture",
-      "Define how hydrogel is retained or placed within the scaffold",
-      "Confirm manufacturability and handling",
-      "Measure spatial release or retention",
-      "Select the first application-specific scaffold configuration"
-    ]
-  },
-  "stage-6": {
-    id: "stage-6",
-    title: "Translation",
-    short: "Application-specific studies",
-    type: "main",
-    defaultStatus: "parked",
-    summary: "Use the established platform to answer clinically motivated application questions without simultaneously reinventing the delivery system.",
-    why: "Application studies are much stronger once the manufacturing and delivery platform is already controlled.",
-    gate: "A validated NC-EV + hydrogel + scaffold workflow with known processing effects.",
-    window: "Jun 2027 onward",
-    parent: "Scaffold integration",
-    milestones: [
-      "Select the first translational indication",
-      "Define clinically meaningful endpoints",
-      "Run an application-specific pilot",
-      "Use pilot data to prioritize the next dissertation aim"
-    ]
-  },
-  storage: {
-    id: "storage",
-    title: "Storage + handling stability",
-    short: "Freeze-thaw, storage duration, aliquoting",
-    type: "piggyback",
-    defaultStatus: "ready",
-    summary: "A low-overhead side project that uses standardized aliquots from NC-EV batches you were already producing.",
-    why: "Storage stability directly matters for a hospital-ready workflow and can generate a useful translational dataset without requiring a second independent production pipeline.",
-    gate: "At least one reproducible NC-EV batch and enough material to reserve standardized aliquots without compromising the main experiment.",
-    window: "Oct 2026–Feb 2027",
-    parent: "NC-EV baseline batches",
-    milestones: [
-      "Define aliquot size and storage conditions",
-      "Measure fresh baseline",
-      "Run controlled freeze-thaw comparisons",
-      "Collect short-term storage endpoints",
-      "Collect longer-term storage endpoints",
-      "Compare recovery, size distribution, and potency"
-    ]
-  },
-  process: {
-    id: "process",
-    title: "NC-EV process-quality dataset",
-    short: "Every batch becomes structured data",
-    type: "piggyback",
-    defaultStatus: "active",
-    summary: "A passive longitudinal dataset built from every NC-EV production batch rather than a separate experiment.",
-    why: "Consistent metadata can later reveal process–quality relationships that would be impossible to reconstruct if parameters are not recorded from day one.",
-    gate: "None beyond disciplined recording. Start with the first batch.",
-    window: "Sep 2026 onward",
-    parent: "Every NC-EV production batch",
-    milestones: [
-      "Create the master batch record",
-      "Record cell input and source information",
-      "Record cavitation and processing parameters",
-      "Record yield, size, PDI, morphology, and recovery",
-      "Link potency outputs to the same batch identifier",
-      "Review the dataset monthly for trends or missing fields"
-    ]
-  },
-  skin: {
-    id: "skin",
-    title: "Skin dehiscence + scar repair",
-    short: "Application project",
-    type: "application",
-    defaultStatus: "waiting",
-    summary: "A distinct clinical application project that should reuse, not reinvent, the NC-EV hydrogel/scaffold platform.",
-    why: "Dehiscence and scar formation give you a clinically clear use case for combining a mechanically useful scaffold with regenerative signaling.",
-    gate: "Hydrogel delivery must be sufficiently established to justify a separate application pilot. Literature review and requirements work can happen earlier.",
-    window: "Design now; bench work Jan 2027 onward",
-    parent: "Hydrogel delivery and later scaffold integration",
-    milestones: [
-      "Define the clinical problem and use scenario",
-      "List mechanical and biological design requirements",
-      "Select wound-healing and scar-related endpoints",
-      "Sketch candidate scaffold attachment/placement concepts",
-      "Choose a pilot configuration once the delivery platform is ready"
-    ]
-  },
-  polytrauma: {
-    id: "polytrauma",
-    title: "Polytrauma + spatial delivery",
-    short: "Gradients and region-specific therapy",
-    type: "future",
-    defaultStatus: "parked",
-    summary: "A later application branch that asks whether architectural control can create spatially distinct therapeutic delivery within complex traumatic defects.",
-    why: "It is potentially high-value, but it only becomes experimentally meaningful once printing and scaffold integration are under control.",
-    gate: "Reliable extrusion/printing and scaffold integration with known NC-EV processing effects.",
-    window: "Mar 2027 onward for design; pilot later",
-    parent: "Extrusion/printing and scaffold integration",
-    milestones: [
-      "Define the spatial-delivery question",
-      "Select a tractable injury model or surrogate geometry",
-      "Choose a gradient or region-specific loading strategy",
-      "Verify manufacturability",
-      "Run a feasibility pilot only after the platform gate is met"
-    ]
-  }
-};
+const { clone, validate, reconcileMilestones, removeProject, arrange } = PlannerModel;
+const STORAGE_KEY = 'researchPlanner.v2';
+const LEGACY_KEY = 'researchPlanner.v1';
+const TYPE_LABELS = { main: 'Main dissertation', piggyback: 'Piggyback', application: 'Application', future: 'Future project', independent: 'Independent project' };
+const COLORS = { main: '#5b66d6', piggyback: '#2d9b73', application: '#c47f2a', future: '#9a6ac7', independent: '#27899d' };
+const $ = id => document.getElementById(id);
+let startupMessage = '', storageBlocked = false;
+let state = loadState(), selectedProjectId = state.projects[0]?.id, editingId = null;
+let timelineYear = Number(state.projects.map(p => p.start).sort()[0]?.slice(0, 4)) || new Date().getFullYear();
+let history = [], drag = null;
 
-const CONNECTIONS = [
-  { from: "stage-1", to: "storage", color: "#2d9b73", direction: "up" },
-  { from: "stage-2", to: "process", color: "#2d9b73", direction: "down" },
-  { from: "stage-3", to: "skin", color: "#c47f2a", direction: "up" },
-  { from: "stage-5", to: "polytrauma", color: "#9a6ac7", direction: "down" }
-];
-
-const TIMELINE_MONTHS = ["Sep '26", "Oct", "Nov", "Dec", "Jan '27", "Feb", "Mar", "Apr", "May", "Jun"];
-const TIMELINE_ROWS = [
-  { id: "stage-1", label: "Main: NC-EV baseline", note: "Core dissertation", start: 0, end: 1, cls: "main", text: "Baseline + reproducibility" },
-  { id: "stage-2", label: "Main: Process + potency", note: "Core dissertation", start: 1, end: 3, cls: "main", text: "Optimization + potency" },
-  { id: "stage-3", label: "Main: Hydrogel delivery", note: "Core dissertation", start: 4, end: 5, cls: "main", text: "Loading + release" },
-  { id: "stage-4", label: "Main: Extrusion + printing", note: "Core dissertation", start: 6, end: 7, cls: "main", text: "Injection vs extrusion vs printing" },
-  { id: "stage-5", label: "Main: Scaffold integration", note: "Core dissertation", start: 7, end: 8, cls: "main", text: "Architecture + delivery" },
-  { id: "stage-6", label: "Main: Translation", note: "Core dissertation", start: 9, end: 9, cls: "main", text: "Applications begin" },
-  { id: "storage", label: "Storage + handling", note: "Piggyback study", start: 1, end: 5, cls: "piggyback", text: "Fresh → freeze/thaw → storage endpoints" },
-  { id: "process", label: "Process-quality dataset", note: "Piggyback dataset", start: 0, end: 9, cls: "piggyback", text: "Every batch contributes" },
-  { id: "skin", label: "Skin dehiscence + scar", note: "Application", start: 0, end: 9, cls: "application", phases: [
-      { start: 0, end: 3, text: "Literature + requirements" },
-      { start: 4, end: 5, text: "Prototype planning" },
-      { start: 6, end: 9, text: "Pilot when platform allows" }
-    ]
-  },
-  { id: "polytrauma", label: "Polytrauma + spatial", note: "Future application", start: 2, end: 9, cls: "future", phases: [
-      { start: 2, end: 5, text: "Literature + model definition" },
-      { start: 6, end: 7, text: "Design" },
-      { start: 8, end: 9, text: "Feasibility only if ready" }
-    ]
-  }
-];
-
-const STATUS_LABELS = {
-  active: "Active now",
-  next: "Next",
-  ready: "Ready soon",
-  waiting: "Waiting on dependency",
-  parked: "Parked",
-  done: "Done"
-};
-
-const STORAGE_KEY = "researchPlanner.v1";
-let selectedProjectId = "stage-1";
-let appState = loadState();
-
-function defaultState() {
-  const status = {};
-  const checks = {};
-  Object.values(PROJECTS).forEach((project) => {
-    status[project.id] = project.defaultStatus;
-    checks[project.id] = project.milestones.map(() => false);
+function initialState(legacy = {}) {
+  const date = index => { const d = new Date(2026, 8 + index, 1); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; };
+  const projects = Object.values(PROJECTS).map((p, index) => {
+    const row = TIMELINE_ROWS.find(r => r.id === p.id);
+    const dependencies = CONNECTIONS.filter(c => c.to === p.id).map(c => c.from);
+    if (p.id.startsWith('stage-') && p.id !== 'stage-1') dependencies.unshift(`stage-${Number(p.id.split('-')[1]) - 1}`);
+    const sidePositions = { storage: [28, 28], skin: [898, 28], process: [318, 488], polytrauma: [1188, 488] };
+    const [x, y] = sidePositions[p.id] || [28 + index * 290, 258];
+    return { ...p, status: STATUS_LABELS[legacy.status?.[p.id]] ? legacy.status[p.id] : p.defaultStatus,
+      dependencies, position: { x, y }, start: date(row.start), end: date(row.end),
+      phases: row.phases?.map(f => ({ ...f, start: date(f.start), end: date(f.end) })),
+      milestones: p.milestones.map((text, i) => ({ text, done: Boolean(legacy.checks?.[p.id]?.[i]) })) };
   });
-  return { status, checks };
+  return validate({ version: 2, projects });
 }
-
 function loadState() {
-  const fallback = defaultState();
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return fallback;
-    const parsed = JSON.parse(raw);
-    Object.keys(fallback.status).forEach((id) => {
-      if (!parsed.status || !STATUS_LABELS[parsed.status[id]]) fallback.status = fallback.status || {};
-      if (!parsed.status?.[id]) parsed.status[id] = fallback.status[id];
-      if (!Array.isArray(parsed.checks?.[id])) {
-        parsed.checks = parsed.checks || {};
-        parsed.checks[id] = fallback.checks[id];
-      }
-      parsed.checks[id] = PROJECTS[id].milestones.map((_, index) => Boolean(parsed.checks[id][index]));
-    });
-    return parsed;
-  } catch {
-    return fallback;
-  }
-}
-
-function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-}
-
-function setView(viewName) {
-  document.querySelectorAll(".tab").forEach((tab) => {
-    const active = tab.dataset.view === viewName;
-    tab.classList.toggle("is-active", active);
-    tab.setAttribute("aria-selected", String(active));
-  });
-  document.querySelectorAll("[data-view-panel]").forEach((panel) => {
-    panel.classList.toggle("is-active", panel.dataset.viewPanel === viewName);
-  });
-  if (viewName === "map") requestAnimationFrame(drawConnections);
-}
-
-function statusClass(status) {
-  return `status-${status}`;
-}
-
-function refreshStatusChips() {
-  document.querySelectorAll("[data-status-for]").forEach((chip) => {
-    const id = chip.dataset.statusFor;
-    const status = appState.status[id] || PROJECTS[id].defaultStatus;
-    chip.className = `status-chip ${statusClass(status)}`;
-    chip.textContent = STATUS_LABELS[status];
-  });
-}
-
-function selectProject(id) {
-  const project = PROJECTS[id];
-  if (!project) return;
-  selectedProjectId = id;
-
-  document.querySelectorAll("[data-project-id]").forEach((card) => {
-    card.classList.toggle("is-selected", card.dataset.projectId === id);
-  });
-
-  document.getElementById("detailTitle").textContent = project.title;
-  document.getElementById("detailSummary").textContent = project.summary;
-  document.getElementById("detailWhy").textContent = project.why;
-  document.getElementById("detailGate").textContent = project.gate;
-  document.getElementById("detailWindow").textContent = project.window;
-  document.getElementById("detailParent").textContent = project.parent;
-  document.getElementById("detailStatus").value = appState.status[id];
-  renderChecklist("detailChecklist", id, true);
-  highlightConnection(id);
-}
-
-function renderChecklist(containerId, projectId, interactive) {
-  const container = document.getElementById(containerId);
-  if (!container || !PROJECTS[projectId]) return;
-  container.innerHTML = "";
-  PROJECTS[projectId].milestones.forEach((item, index) => {
-    const label = document.createElement("label");
-    label.className = `check-item${appState.checks[projectId][index] ? " is-complete" : ""}`;
-
-    const input = document.createElement("input");
-    input.type = "checkbox";
-    input.checked = appState.checks[projectId][index];
-    input.disabled = !interactive;
-    input.addEventListener("change", () => {
-      appState.checks[projectId][index] = input.checked;
-      saveState();
-      renderChecklist(containerId, projectId, interactive);
-      renderFocusChecklists();
-    });
-
-    const text = document.createElement("span");
-    text.textContent = item;
-    label.append(input, text);
-    container.appendChild(label);
-  });
-}
-
-function renderFocusChecklists() {
-  renderChecklist("mainFocusMilestones", "stage-1", true);
-  renderChecklist("sideFocusMilestones", "storage", true);
-  renderChecklist("dataFocusMilestones", "process", true);
-}
-
-function buildTimeline() {
-  const timeline = document.getElementById("timeline");
-  timeline.innerHTML = "";
-  timeline.appendChild(makeCell("timeline-cell timeline-head", "Project"));
-  TIMELINE_MONTHS.forEach((month) => timeline.appendChild(makeCell("timeline-cell timeline-head", month)));
-
-  TIMELINE_ROWS.forEach((row) => {
-    const label = document.createElement("button");
-    label.type = "button";
-    label.className = "timeline-cell timeline-row-label";
-    label.innerHTML = `<span>${row.label}</span><small>${row.note}</small>`;
-    label.addEventListener("click", () => {
-      setView("map");
-      selectProject(row.id);
-      document.getElementById("detailPanel").scrollIntoView({ behavior: "smooth", block: "nearest" });
-    });
-    timeline.appendChild(label);
-
-    if (row.phases) {
-      TIMELINE_MONTHS.forEach((_, monthIndex) => {
-        const phase = row.phases.find((p) => monthIndex >= p.start && monthIndex <= p.end);
-        const cell = makeCell(`timeline-bar ${phase ? row.cls : "timeline-empty"}`, "");
-        if (phase && monthIndex === phase.start) cell.textContent = phase.text;
-        timeline.appendChild(cell);
-      });
-    } else {
-      TIMELINE_MONTHS.forEach((_, monthIndex) => {
-        const active = monthIndex >= row.start && monthIndex <= row.end;
-        const cell = makeCell(`timeline-bar ${active ? row.cls : "timeline-empty"}`, "");
-        if (active && monthIndex === row.start) cell.textContent = row.text;
-        timeline.appendChild(cell);
-      });
+    if (raw) {
+      try { return validate(JSON.parse(raw)); }
+      catch { storageBlocked = true; startupMessage = 'Saved plan could not be read. It has not been overwritten. Showing the starting plan. Import a valid backup to replace the unreadable data.'; return initialState(); }
     }
+    const legacy = localStorage.getItem(LEGACY_KEY);
+    if (legacy) { try { return initialState(JSON.parse(legacy) || {}); } catch { startupMessage = 'Previous progress could not be read; the original saved data is unchanged.'; } }
+  } catch { startupMessage = 'Browser storage is unavailable. Use Export plan to keep your changes.'; }
+  return initialState();
+}
+function notice(message, error = false) { $('saveStatus').textContent = message; $('saveStatus').classList.toggle('is-error', error); }
+function saveState() {
+  if (storageBlocked) { notice('Original saved data is protected. These changes are only in memory; use Export plan to keep them.', true); return; }
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); notice('Saved in this browser · Export plan for a backup or another device.'); }
+  catch { notice('Could not save to this browser. Use Export plan to keep your changes.', true); }
+}
+function commit(next, message) {
+  validate(next); history.push(clone(state)); if (history.length > 40) history.shift();
+  state = next; if (!state.projects.some(p => p.id === selectedProjectId)) selectedProjectId = state.projects[0]?.id;
+  render(); saveState(); if (message && !storageBlocked && !$('saveStatus').classList.contains('is-error')) notice(`${message} Saved in this browser.`);
+}
+function project(id = selectedProjectId) { return state.projects.find(p => p.id === id); }
+function el(tag, className, text) { const node = document.createElement(tag); node.className = className; if (text !== undefined) node.textContent = text; return node; }
+function button(text, className = 'btn') { const node = el('button', className, text); node.type = 'button'; return node; }
+function monthLabel(value) { return new Date(`${value}-01T12:00:00`).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }); }
+function setView(name) {
+  document.querySelectorAll('.tab').forEach(tab => { const active = tab.dataset.view === name; tab.classList.toggle('is-active', active); tab.setAttribute('aria-selected', active); });
+  document.querySelectorAll('[data-view-panel]').forEach(panel => panel.classList.toggle('is-active', panel.dataset.viewPanel === name));
+  if (name === 'map') requestAnimationFrame(drawConnections);
+}
+function render() { renderMap(); buildTimeline(); renderFocus(); selectProject(selectedProjectId); $('undoBtn').disabled = !history.length; }
+function renderMap() {
+  $('projectNodes').replaceChildren();
+  if (!state.projects.length) $('projectNodes').append(el('p', 'empty-map', 'Start your plan with + Add project.'));
+  state.projects.forEach(p => {
+    const card = el('article', 'project-card movable-card'); card.dataset.projectId = p.id;
+    card.style.left = `${p.position.x}px`; card.style.top = `${p.position.y}px`; card.style.borderLeft = `4px solid ${COLORS[p.type]}`;
+    const handle = button('⠿ Move', 'drag-handle'); handle.setAttribute('aria-label', `Move ${p.title}`); handle.setAttribute('aria-describedby', 'mapHelp'); handle.title = 'Drag to move; arrow keys move 20px, Shift + arrow keys move 100px';
+    handle.addEventListener('pointerdown', event => startDrag(event, p.id, card, handle));
+    handle.addEventListener('keydown', event => {
+      const delta = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[event.key];
+      if (!delta) return; event.preventDefault(); const next = clone(state), pos = next.projects.find(q => q.id === p.id).position, step = event.shiftKey ? 100 : 20;
+      pos.x = Math.min(100000, Math.max(8, pos.x + delta[0] * step)); pos.y = Math.min(100000, Math.max(8, pos.y + delta[1] * step));
+      commit(next); $('projectNodes').querySelector(`[data-project-id="${p.id}"] .drag-handle`).focus({ preventScroll: true });
+    });
+    const select = button('', 'card-select'); select.setAttribute('aria-label', `Select ${p.title}`);
+    select.append(el('span', 'project-type', TYPE_LABELS[p.type]), el('h3', '', p.title), el('p', '', p.short || p.summary), el('span', `status-chip status-${p.status}`, STATUS_LABELS[p.status]));
+    select.addEventListener('click', () => selectProject(p.id)); select.addEventListener('dblclick', () => openEditor(p.id));
+    card.append(handle, select); $('projectNodes').append(card);
   });
+  sizeCanvas(); requestAnimationFrame(drawConnections);
 }
-
-function makeCell(className, text) {
-  const div = document.createElement("div");
-  div.className = className;
-  div.textContent = text;
-  return div;
+function sizeCanvas() {
+  $('dependencyCanvas').style.width = `${Math.max(1100, ...state.projects.map(p => p.position.x + 280))}px`;
+  $('dependencyCanvas').style.height = `${Math.max(720, ...state.projects.map(p => p.position.y + 250))}px`;
 }
-
+function startDrag(event, id, card, handle) {
+  if (event.button !== 0 || drag) return;
+  selectProject(id);
+  const start = { ...project(id).position }, before = clone(state), scroll = $('mapScroll');
+  drag = { id, pointerId: event.pointerId, before, cancel: () => finish(true) };
+  const initial = { x: event.clientX, y: event.clientY, scrollX: scroll.scrollLeft, scrollY: scroll.scrollTop };
+  let moved = false, last = event;
+  handle.setPointerCapture(event.pointerId); card.classList.add('is-dragging');
+  function position(e) {
+    if (!moved && Math.hypot(e.clientX - initial.x, e.clientY - initial.y) < 4) return;
+    moved = true;
+    const p = project(id); p.position = {
+      x: Math.min(100000, Math.max(8, start.x + e.clientX - initial.x + scroll.scrollLeft - initial.scrollX)),
+      y: Math.min(100000, Math.max(8, start.y + e.clientY - initial.y + scroll.scrollTop - initial.scrollY))
+    };
+    card.style.left = `${p.position.x}px`; card.style.top = `${p.position.y}px`; sizeCanvas(); drawConnections();
+  }
+  function move(e) { if (e.pointerId !== event.pointerId) return; last = e; position(e); }
+  function autoScroll() {
+    if (!drag || drag.id !== id) return;
+    const r = scroll.getBoundingClientRect();
+    if (moved) { scroll.scrollLeft += last.clientX > r.right - 35 ? 12 : last.clientX < r.left + 35 ? -12 : 0; scroll.scrollTop += last.clientY > r.bottom - 35 ? 12 : last.clientY < r.top + 35 ? -12 : 0; position(last); }
+    frame = requestAnimationFrame(autoScroll);
+  }
+  function finish(cancelled) {
+    if (!drag) return;
+    const after = clone(state); state = before; drag = null; cancelAnimationFrame(frame);
+    handle.removeEventListener('pointermove', move); handle.removeEventListener('pointerup', up); handle.removeEventListener('pointercancel', cancel); handle.removeEventListener('lostpointercapture', cancel);
+    if (handle.hasPointerCapture(event.pointerId)) handle.releasePointerCapture(event.pointerId);
+    if (moved && !cancelled) commit(after); else { renderMap(); selectProject(id); }
+  }
+  function up(e) { if (e.pointerId === event.pointerId) finish(false); }
+  function cancel() { finish(true); }
+  let frame = requestAnimationFrame(autoScroll);
+  handle.addEventListener('pointermove', move); handle.addEventListener('pointerup', up); handle.addEventListener('pointercancel', cancel); handle.addEventListener('lostpointercapture', cancel);
+}
 function drawConnections() {
-  const canvas = document.getElementById("dependencyCanvas");
-  const svg = document.getElementById("connectorLayer");
-  if (!canvas || !svg || !canvas.offsetParent) return;
-
-  const canvasRect = canvas.getBoundingClientRect();
-  svg.setAttribute("viewBox", `0 0 ${canvasRect.width} ${canvasRect.height}`);
-  svg.innerHTML = `
-    <defs>
-      ${CONNECTIONS.map((c, i) => `<marker id="arrow-${i}" viewBox="0 0 10 10" refX="8.4" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="${c.color}"></path></marker>`).join("")}
-    </defs>`;
-
-  CONNECTIONS.forEach((connection, index) => {
-    const from = document.querySelector(`[data-stage-id="${connection.from}"]`);
-    const to = document.querySelector(`[data-project-id="${connection.to}"]`);
-    if (!from || !to) return;
-    const a = from.getBoundingClientRect();
-    const b = to.getBoundingClientRect();
-
-    const x1 = a.left + a.width / 2 - canvasRect.left;
-    const y1 = connection.direction === "up" ? a.top - canvasRect.top : a.bottom - canvasRect.top;
-    const x2 = b.left + b.width / 2 - canvasRect.left;
-    const y2 = connection.direction === "up" ? b.bottom - canvasRect.top : b.top - canvasRect.top;
-    const bend = Math.max(42, Math.abs(y2 - y1) * 0.52);
-    const c1y = connection.direction === "up" ? y1 - bend : y1 + bend;
-    const c2y = connection.direction === "up" ? y2 + bend * 0.35 : y2 - bend * 0.35;
-
-    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute("d", `M ${x1} ${y1} C ${x1} ${c1y}, ${x2} ${c2y}, ${x2} ${y2}`);
-    path.setAttribute("fill", "none");
-    path.setAttribute("stroke", connection.color);
-    path.setAttribute("stroke-width", "2.5");
-    path.setAttribute("stroke-linecap", "round");
-    path.setAttribute("marker-end", `url(#arrow-${index})`);
-    path.dataset.connectionTo = connection.to;
-    path.style.opacity = "0.84";
-    svg.appendChild(path);
-  });
-  highlightConnection(selectedProjectId);
+  const canvas = $('dependencyCanvas'), svg = $('connectorLayer'); if (!canvas.offsetParent) return;
+  const width = canvas.clientWidth, height = canvas.clientHeight;
+  svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+  svg.innerHTML = '<defs><marker id="dependencyArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="context-stroke"/></marker></defs>';
+  const cards = new Map([...$('projectNodes').children].map(c => [c.dataset.projectId, c]));
+  for (const p of state.projects) for (const dep of p.dependencies) {
+    const a = cards.get(dep), b = cards.get(p.id); if (!a || !b) continue;
+    const ax = a.offsetLeft, ay = a.offsetTop, bx = b.offsetLeft, by = b.offsetTop;
+    let x1, y1, x2, y2, d;
+    if (Math.abs(bx - ax) > Math.abs(by - ay)) {
+      const dir = bx >= ax ? 1 : -1; x1 = ax + (dir > 0 ? a.offsetWidth : 0); y1 = ay + a.offsetHeight / 2; x2 = bx + (dir > 0 ? 0 : b.offsetWidth); y2 = by + b.offsetHeight / 2;
+      const bend = Math.max(45, Math.abs(x2 - x1) / 2); d = `M${x1},${y1} C${x1 + dir * bend},${y1} ${x2 - dir * bend},${y2} ${x2},${y2}`;
+    } else {
+      const dir = by >= ay ? 1 : -1; x1 = ax + a.offsetWidth / 2; y1 = ay + (dir > 0 ? a.offsetHeight : 0); x2 = bx + b.offsetWidth / 2; y2 = by + (dir > 0 ? 0 : b.offsetHeight);
+      const bend = Math.max(45, Math.abs(y2 - y1) / 2); d = `M${x1},${y1} C${x1},${y1 + dir * bend} ${x2},${y2 - dir * bend} ${x2},${y2}`;
+    }
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path'); path.setAttribute('d', d); path.setAttribute('fill', 'none'); path.setAttribute('stroke', COLORS[p.type]); path.setAttribute('stroke-width', '2.5'); path.setAttribute('marker-end', 'url(#dependencyArrow)'); path.dataset.from = dep; path.dataset.to = p.id; svg.append(path);
+  }
+  highlightConnections();
 }
-
-function highlightConnection(projectId) {
-  document.querySelectorAll("#connectorLayer path[data-connection-to]").forEach((path) => {
-    const isRelated = path.dataset.connectionTo === projectId || CONNECTIONS.some((c) => c.to === path.dataset.connectionTo && c.from === projectId);
-    path.style.opacity = isRelated ? "1" : "0.42";
-    path.style.strokeWidth = isRelated ? "3.4" : "2.5";
+function highlightConnections() { $('connectorLayer').querySelectorAll('path[data-from]').forEach(path => { path.style.opacity = [path.dataset.from, path.dataset.to].includes(selectedProjectId) ? 1 : 0.4; }); }
+function selectProject(id) {
+  const p = project(id); selectedProjectId = p?.id; $('detailPanel').hidden = !p;
+  $('projectNodes').querySelectorAll('.project-card').forEach(c => { const selected = c.dataset.projectId === id; c.classList.toggle('is-selected', selected); c.querySelector('.card-select').setAttribute('aria-pressed', String(selected)); });
+  if (!p) return;
+  for (const [target, key] of [['detailTitle','title'], ['detailSummary','summary'], ['detailWhy','why'], ['detailGate','gate']]) $(target).textContent = p[key] || 'Not specified';
+  $('detailWindow').textContent = `${monthLabel(p.start)} – ${monthLabel(p.end)}${p.window ? ` · ${p.window}` : ''}`;
+  $('detailParent').replaceChildren();
+  if (!p.dependencies.length) $('detailParent').textContent = 'None · independent starting point';
+  p.dependencies.forEach(dep => { const parent = project(dep), link = button(`${parent.title} (${STATUS_LABELS[parent.status]})`, 'dependency-link'); link.addEventListener('click', () => selectProject(dep)); $('detailParent').append(link); });
+  $('detailStatus').value = p.status; renderChecklist($('detailChecklist'), p); highlightConnections();
+}
+function renderChecklist(container, p) {
+  container.replaceChildren();
+  if (!p.milestones.length) { container.append(el('p', 'field-help', 'No milestones yet. Add them in Edit project.')); return; }
+  p.milestones.forEach((m, index) => {
+    const label = el('label', `check-item${m.done ? ' is-complete' : ''}`), input = document.createElement('input'); input.type = 'checkbox'; input.checked = m.done;
+    input.addEventListener('change', () => { const next = clone(state); next.projects.find(q => q.id === p.id).milestones[index].done = input.checked; commit(next); });
+    label.append(input, el('span', '', m.text)); container.append(label);
   });
 }
-
-function resetProgress() {
-  const okay = window.confirm("Reset all saved statuses and milestone checkboxes to the original planner defaults?");
-  if (!okay) return;
-  appState = defaultState();
-  saveState();
-  refreshStatusChips();
-  renderFocusChecklists();
-  selectProject("stage-1");
-}
-
-function initialize() {
-  document.querySelectorAll(".tab").forEach((tab) => {
-    tab.addEventListener("click", () => setView(tab.dataset.view));
-  });
-
-  document.querySelectorAll("[data-project-id]").forEach((card) => {
-    card.tabIndex = 0;
-    card.setAttribute("role", "button");
-    card.addEventListener("click", () => selectProject(card.dataset.projectId));
-    card.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        selectProject(card.dataset.projectId);
-      }
+function buildTimeline() {
+  const container = $('timeline'); container.replaceChildren();
+  container.style.gridTemplateColumns = '210px repeat(12, minmax(90px, 1fr))';
+  container.append(el('div', 'timeline-cell timeline-head', `Project · ${timelineYear}`));
+  const months = Array.from({ length: 12 }, (_, i) => `${timelineYear}-${String(i + 1).padStart(2, '0')}`);
+  months.forEach(m => container.append(el('div', 'timeline-cell timeline-head', monthLabel(m))));
+  state.projects.forEach(p => {
+    const label = button('', 'timeline-cell timeline-row-label'); label.append(el('span', '', p.title), el('small', '', TYPE_LABELS[p.type]));
+    label.addEventListener('click', () => { setView('map'); selectProject(p.id); $('detailPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }); container.append(label);
+    months.forEach((m, i) => {
+      const active = m >= p.start && m <= p.end, phase = p.phases?.find(f => m >= f.start && m <= f.end);
+      const cell = el('div', `timeline-bar ${active ? p.type : 'timeline-empty'}`);
+      if (active) { cell.title = `${p.title}: ${monthLabel(p.start)} – ${monthLabel(p.end)}`; if (m === phase?.start || (!p.phases && (m === p.start || i === 0)) || (i === 0 && phase)) cell.textContent = phase?.text || p.short || p.title; }
+      container.append(cell);
     });
   });
-
-  document.getElementById("detailStatus").addEventListener("change", (event) => {
-    appState.status[selectedProjectId] = event.target.value;
-    saveState();
-    refreshStatusChips();
-  });
-
-  document.getElementById("resetProgressBtn").addEventListener("click", resetProgress);
-
-  window.addEventListener("resize", () => requestAnimationFrame(drawConnections));
-  document.getElementById("mapScroll").addEventListener("scroll", () => requestAnimationFrame(drawConnections), { passive: true });
-
-  buildTimeline();
-  refreshStatusChips();
-  renderFocusChecklists();
-  selectProject("stage-1");
-  requestAnimationFrame(drawConnections);
 }
-
+function renderFocus() {
+  $('focusGrid').replaceChildren();
+  const focused = state.projects.filter(p => ['active', 'next', 'ready'].includes(p.status));
+  if (!focused.length) $('focusGrid').append(el('p', '', 'No active or upcoming projects. Change a project status to Active now, Next, or Ready soon.'));
+  focused.forEach(p => { const card = el('article', 'focus-card'); card.append(el('span', 'focus-label', `${TYPE_LABELS[p.type]} · ${STATUS_LABELS[p.status]}`)); const title = button(p.title, 'focus-title'); title.addEventListener('click', () => { setView('map'); selectProject(p.id); $('detailPanel').scrollIntoView({ block: 'nearest' }); }); card.append(title, el('p', '', p.summary)); const checklist = el('div', 'mini-checklist'); renderChecklist(checklist, p); card.append(checklist); $('focusGrid').append(card); });
+}
+function openEditor(id = null) {
+  editingId = id;
+  const today = new Date(), month = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+  const p = project(id) || { title: '', type: 'independent', status: 'parked', short: '', summary: '', why: '', gate: '', window: '', start: month, end: month, milestones: [], dependencies: [] };
+  $('editorTitle').textContent = id ? 'Edit project' : 'Add project'; $('formError').textContent = '';
+  for (const key of ['title', 'type', 'status', 'short', 'summary', 'why', 'gate', 'window', 'start', 'end']) $(`project${key[0].toUpperCase()}${key.slice(1)}`).value = p[key];
+  $('projectMilestones').value = p.milestones.map(m => m.text).join('\n'); $('dependencyOptions').replaceChildren();
+  state.projects.filter(q => q.id !== id).forEach(q => { const label = el('label', 'check-item'), input = document.createElement('input'); input.type = 'checkbox'; input.value = q.id; input.checked = p.dependencies.includes(q.id); label.append(input, el('span', '', q.title)); $('dependencyOptions').append(label); });
+  if (!state.projects.some(q => q.id !== id)) $('dependencyOptions').textContent = 'No other projects yet.';
+  $('projectDialog').showModal(); $('projectTitle').focus();
+}
+function saveProject(event) {
+  event.preventDefault();
+  const old = project(editingId), next = clone(state), p = old ? clone(old) : { id: `project-${crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36)}`, position: { x: 28, y: Math.min(100000, Math.max(28, ...state.projects.map(q => q.position.y + 230))) }, defaultStatus: 'parked' };
+  for (const key of ['title', 'type', 'status', 'short', 'summary', 'why', 'gate', 'window', 'start', 'end']) p[key] = $(`project${key[0].toUpperCase()}${key.slice(1)}`).value.trim();
+  p.dependencies = [...$('dependencyOptions').querySelectorAll('input:checked')].map(input => input.value);
+  p.milestones = reconcileMilestones(old?.milestones || [], $('projectMilestones').value);
+  if (!old || old.start !== p.start || old.end !== p.end) delete p.phases;
+  if (old) next.projects[next.projects.findIndex(q => q.id === old.id)] = p; else next.projects.push(p);
+  try { validate(next); selectedProjectId = p.id; commit(next); $('projectDialog').close(); setView('map'); requestAnimationFrame(() => $('projectNodes').querySelector(`[data-project-id="${p.id}"]`).scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' })); }
+  catch (error) { $('formError').textContent = error.message; $('formError').scrollIntoView({ block: 'nearest' }); }
+}
+function deleteSelected() {
+  const p = project(); if (!p) return;
+  const affected = state.projects.filter(q => q.dependencies.includes(p.id));
+  if (!confirm(`Delete “${p.title}”?${affected.length ? ` Its connections to ${affected.map(q => q.title).join(', ')} will also be removed.` : ''} You can undo this.`)) return;
+  commit(removeProject(state, p.id), 'Project deleted.');
+}
+function exportPlan() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' }), url = URL.createObjectURL(blob), link = document.createElement('a');
+  link.href = url; link.download = `research-plan-${new Date().toISOString().slice(0, 10)}.json`; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+async function importPlan(event) {
+  const file = event.target.files[0]; if (!file) return;
+  try {
+    if (file.size > 5 * 1024 * 1024) throw new Error('Choose a plan smaller than 5 MB.');
+    const next = validate(JSON.parse(await file.text()));
+    if (!confirm(`Replace this browser's plan with ${next.projects.length} imported projects? Export first to keep a separate backup. You can undo this during this session.${storageBlocked ? ' This will replace unreadable saved data.' : ''}`)) return;
+    storageBlocked = false; timelineYear = Number(next.projects.map(p => p.start).sort()[0]?.slice(0, 4)) || new Date().getFullYear(); $('calendarYear').value = timelineYear; commit(next, 'Plan imported.');
+  } catch (error) { notice(`Import failed: ${error.message}`, true); }
+  finally { event.target.value = ''; }
+}
+function initialize() {
+  document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => setView(tab.dataset.view)));
+  $('addProjectBtn').addEventListener('click', () => openEditor()); $('editProjectBtn').addEventListener('click', () => openEditor(selectedProjectId));
+  $('deleteProjectBtn').addEventListener('click', deleteSelected); $('cancelEditorBtn').addEventListener('click', () => $('projectDialog').close()); $('projectForm').addEventListener('submit', saveProject);
+  $('projectStatus').innerHTML = $('detailStatus').innerHTML;
+  $('detailStatus').addEventListener('change', event => { const next = clone(state); next.projects.find(p => p.id === selectedProjectId).status = event.target.value; commit(next); });
+  $('undoBtn').addEventListener('click', () => { if (!history.length) return; state = history.pop(); if (!project()) selectedProjectId = state.projects[0]?.id; render(); saveState(); });
+  $('arrangeBtn').addEventListener('click', () => commit(arrange(state), 'Map arranged by dependencies.'));
+  $('resetProgressBtn').addEventListener('click', () => { if (!confirm('Reset statuses and milestone checkboxes? Your projects, layout, dates, and dependencies will stay unchanged. You can undo this.')) return; const next = clone(state); next.projects.forEach(p => { p.status = STATUS_LABELS[p.defaultStatus] ? p.defaultStatus : 'parked'; p.milestones.forEach(m => { m.done = false; }); }); commit(next); });
+  $('exportBtn').addEventListener('click', exportPlan); $('importBtn').addEventListener('click', () => $('importFile').click()); $('importFile').addEventListener('change', importPlan);
+  const label = el('label', 'year-control', 'Calendar year '), select = el('select', ''); select.id = 'calendarYear'; select.setAttribute('aria-label', 'Calendar year');
+  for (let year = 2000; year <= 2100; year++) { const option = el('option', '', year); option.value = year; select.append(option); }
+  select.value = timelineYear; select.addEventListener('change', () => { timelineYear = Number(select.value); buildTimeline(); }); label.append(select); $('timelineView').insertBefore(label, $('timelineView').querySelector('.timeline-scroll'));
+  document.addEventListener('keydown', event => { if (event.key === 'Escape' && drag) { event.preventDefault(); drag.cancel(); } });
+  window.addEventListener('resize', () => requestAnimationFrame(drawConnections));
+  render(); if (startupMessage) notice(startupMessage, true);
+}
 initialize();
