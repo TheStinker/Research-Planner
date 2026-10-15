@@ -32,6 +32,27 @@
       visiting.delete(id); visited.add(id);
     }
     state.projects.forEach(p => visit(p.id));
+    if (state.assignments !== undefined) {
+      if (!Array.isArray(state.assignments) || state.assignments.length > 500) throw new Error('Weekly goals must be a list of up to 500 entries.');
+      const taskIds = new Set();
+      const date = value => {
+        if (typeof value !== 'string' || !/^20\d{2}-(0[1-9]|1[0-2])-([0-2]\d|3[01])$/.test(value)) return false;
+        const parsed = new Date(value + 'T00:00:00Z');
+        return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+      };
+      for (const task of state.assignments) {
+        if (!task || typeof task.id !== 'string' || !/^[\w-]{1,100}$/.test(task.id) || taskIds.has(task.id)) throw new Error('Weekly goal IDs must be unique.');
+        taskIds.add(task.id);
+        if (!['Ashley','Jocelyn'].includes(task.owner)) throw new Error('Each weekly goal needs Ashley or Jocelyn as its owner.');
+        if (!date(task.week) || new Date(task.week + 'T00:00:00Z').getUTCDay() !== 1) throw new Error('Weekly goals must use a valid Monday.');
+        if (typeof task.title !== 'string' || !task.title.trim() || task.title.length > 180) throw new Error('Weekly goals need a title of up to 180 characters.');
+        if (!['todo','in-progress','blocked','done'].includes(task.status)) throw new Error('Invalid weekly goal status.');
+        if (typeof task.due !== 'string' || (task.due && !date(task.due))) throw new Error('Invalid weekly goal due date.');
+        if (typeof task.projectId !== 'string' || (task.projectId && !ids.has(task.projectId))) throw new Error('A weekly goal references a project that does not exist.');
+        if (typeof task.notes !== 'string' || task.notes.length > 3000) throw new Error('Weekly goal notes must be shorter than 3,000 characters.');
+        if (!Array.isArray(task.goals) || task.goals.length > 25 || task.goals.some(g => !g || typeof g.text !== 'string' || !g.text.trim() || g.text.length > 300 || typeof g.done !== 'boolean')) throw new Error('A weekly goal can have up to 25 checkable steps (300 characters each).');
+      }
+    }
     return state;
   }
   function reconcileMilestones(previous, lines) {
@@ -44,6 +65,7 @@
   function removeProject(state, id) {
     const next = clone(state);
     next.projects = next.projects.filter(p => p.id !== id).map(p => ({ ...p, dependencies: p.dependencies.filter(dep => dep !== id) }));
+    if (Array.isArray(next.assignments)) next.assignments.forEach(task => { if (task.projectId === id) task.projectId = ""; });
     return validate(next);
   }
   function arrange(state) {
