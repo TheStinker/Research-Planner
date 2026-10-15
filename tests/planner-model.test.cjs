@@ -71,3 +71,49 @@ test('reload retains complete edited plan and protects unreadable saved data', (
   assert.equal(broken.storage.get('researchPlanner.v2'), 'broken json');
   assert.match(broken.read('startupMessage'), /not been overwritten/);
 });
+
+
+test('weekly undergraduate assignments validate, export as JSON, and survive reload', () => {
+  const assigned = {
+    id:'goal-jocelyn-1', owner:'Jocelyn', week:'2026-10-12', due:'2026-10-16',
+    title:'Draft PEGDA hydrogel SOP', status:'in-progress', projectId:'stage-3',
+    notes:'Literature-supported protocol', goals:[{text:'List reagents',done:true},{text:'Add QC steps',done:false}]
+  };
+  const app = loadApp();
+  const initial = app.read('state');
+  initial.assignments = [assigned];
+  model.validate(initial);
+  const reloaded = loadApp({
+    'researchPlanner.v2':JSON.stringify(initial),
+    'researchPlanner.addedNiamsLiteratureReview.v1':'1'
+  });
+  assert.deepEqual(reloaded.read('state').assignments, [assigned]);
+  assert.deepEqual(JSON.parse(JSON.stringify(initial)).assignments, [assigned]);
+});
+test('weekly goal validation rejects malformed entries while preserving legacy imports', () => {
+  const p = project('hydrogel');
+  const task = {id:'goal-1', owner:'Ashley', week:'2026-10-12', due:'', title:'Plan scaffold fit study',
+    status:'todo', projectId:'hydrogel', notes:'', goals:[{text:'Sketch fixture',done:false}]};
+  assert.equal(model.validate(plan([p])).projects.length, 1);
+  assert.equal(model.validate({...plan([p]),assignments:[task]}).assignments.length, 1);
+  const broken = [
+    {...task,owner:'Other'},
+    {...task,week:'2026-10-13'},
+    {...task,due:'2026-02-30'},
+    {...task,status:'unknown'},
+    {...task,projectId:'missing'},
+    {...task,goals:[{text:'bad',done:'yes'}]}
+  ];
+  for (const invalid of broken) assert.throws(() => model.validate({...plan([p]),assignments:[invalid]}));
+  assert.throws(() => model.validate({...plan([p]),assignments:[task,task]}));
+});
+test('deleting a research project retains weekly goals but clears their optional link', () => {
+  const before = {...plan([project('a')]),assignments:[{
+    id:'goal-1', owner:'Ashley', week:'2026-10-12', due:'',
+    title:'Design loading plan', status:'todo',projectId:'a',notes:'',goals:[]
+  }]};
+  const after = model.removeProject(before,'a');
+  assert.equal(after.assignments.length,1);
+  assert.equal(after.assignments[0].projectId,'');
+  assert.equal(before.assignments[0].projectId,'a');
+});

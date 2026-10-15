@@ -376,3 +376,38 @@ dialog::backdrop { background: #12141999; }
 .form-error:empty { display: none; }
 .detail-panel p, .focus-card p { overflow-wrap: anywhere; }
 @media (max-width: 620px) { .map-tools { flex-wrap: wrap; } .map-tools p { flex-basis: 100%; } .editor-grid { grid-template-columns: 1fr; } .map-scroll { height: 460px; } .topbar-actions .btn { width: auto; } .topbar-actions { justify-content: flex-start; } }
+
+
+/* Weekly undergraduate planning */
+.weekly-toolbar { display: flex; gap: 18px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin: 0 0 18px; }
+.week-nav { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.week-nav h3 { margin: 0; font-size: 1.05rem; min-width: 210px; text-align: center; }
+.undergrad-stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+.weekly-stat { padding: 10px 14px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; font-size: .85rem; color: var(--muted); }
+.weekly-stat strong { font-size: 1.03rem; color: var(--text); margin-right: 6px; }
+.undergrad-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.undergrad-column { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); min-height: 210px; }
+.undergrad-column-heading { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 14px; }
+.undergrad-column-heading h3 { margin: 0; font-size: 1.18rem; }
+.undergrad-column-heading .btn { padding: 7px 10px; min-height: 35px; }
+.weekly-empty { padding: 20px; border: 1px dashed var(--border); border-radius: 12px; color: var(--muted); font-size: .9rem; line-height: 1.5; }
+.weekly-task-list { display: grid; gap: 12px; }
+.weekly-task { border: 1px solid var(--border); background: var(--panel-soft); border-radius: 13px; padding: 15px; }
+.weekly-task-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.weekly-task-title { font-weight: 800; font-size: .97rem; margin-bottom: 7px; line-height: 1.35; overflow-wrap: anywhere; }
+.weekly-task-meta { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; margin: 8px 0 12px; font-size: .76rem; color: var(--muted); }
+.weekly-tag { border: 1px solid var(--border); border-radius: 8px; padding: 4px 7px; background: var(--panel); }
+.weekly-late { color: #b04b35; border-color: #d59b89; }
+.weekly-task-note { color: var(--muted); font-size: .83rem; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; margin: 9px 0; }
+.weekly-task-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.weekly-status { background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 9px; padding: 7px 8px; max-width: 180px; font: inherit; font-size: .79rem; }
+.weekly-task-goals { display: grid; gap: 6px; margin: 10px 0; }
+.weekly-task-goals .check-item { background: var(--panel); }
+.weekly-goal-progress { color: var(--muted); font-size: .75rem; margin: 7px 0 0; }
+.weekly-dialog-actions { justify-content: space-between; }
+#weeklyGoalDialog { max-width: min(720px, calc(100vw - 30px)); width: 100%; }
+#weeklyGoalDialog input, #weeklyGoalDialog select, #weeklyGoalDialog textarea { color: var(--text); background: var(--panel); }
+@media (max-width: 800px) {
+  .undergrad-columns { grid-template-columns: 1fr; }
+  .weekly-toolbar .section-note { text-align: left; }
+}

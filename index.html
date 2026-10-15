@@ -6,7 +6,7 @@
   <meta name="color-scheme" content="light dark" />
   <meta name="theme-color" content="#6d5dfc" />
   <title>Research Planner</title>
-  <link rel="stylesheet" href="styles.css?v=3" />
+  <link rel="stylesheet" href="styles.css?v=4" />
 </head>
 <body>
   <div class="app-shell">
@@ -29,6 +29,7 @@
       <button class="tab is-active" type="button" data-view="map" aria-selected="true">Dependency map</button>
       <button class="tab" type="button" data-view="timeline" aria-selected="false">Project calendar</button>
       <button class="tab" type="button" data-view="focus" aria-selected="false">Current focus</button>
+      <button class="tab" type="button" data-view="undergrads" aria-selected="false">Undergrad weekly goals</button>
     </nav>
 
     <p id="saveStatus" role="status" class="save-status">Changes save in this browser.</p>
@@ -129,10 +130,31 @@
         </div>
         <div class="focus-grid" id="focusGrid"></div>
       </section>
+
+      <section class="view" id="undergradsView" data-view-panel="undergrads">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Research mentoring</p>
+            <h2>Ashley &amp; Jocelyn · Weekly goals</h2>
+          </div>
+          <button class="btn btn-primary" id="addWeeklyGoalBtn" type="button">+ Assign a goal</button>
+        </div>
+        <div class="weekly-toolbar">
+          <div class="week-nav">
+            <button class="btn" id="previousWeekBtn" type="button" aria-label="Previous week">←</button>
+            <h3 id="undergradWeekTitle" aria-live="polite"></h3>
+            <button class="btn" id="nextWeekBtn" type="button" aria-label="Next week">→</button>
+            <button class="btn" id="currentWeekBtn" type="button">This week</button>
+          </div>
+          <p class="section-note">Assign one clear outcome, then break it into checkable steps. Previous weeks remain available.</p>
+        </div>
+        <div id="undergradStats" class="undergrad-stats" aria-live="polite"></div>
+        <div id="undergradColumns" class="undergrad-columns"></div>
+      </section>
     </main>
 
     <footer>
-      <p>Your projects, positions, dependencies, dates, and progress save in this browser only. Export a plan to back it up or move it to another browser. Edits do not sync to GitHub or other devices.</p>
+      <p>Your projects, undergrad weekly assignments, positions, dependencies, dates, and progress save in this browser only. Export a plan to back it up or move it to another browser. Edits do not sync to GitHub or other devices.</p>
     </footer>
   </div>
 
@@ -157,8 +179,32 @@
       <div class="dialog-footer"><button type="submit" class="btn btn-primary">Save project</button></div>
     </form>
   </dialog>
-  <script src="defaults.js?v=3"></script>
-  <script src="planner-model.js?v=3"></script>
-  <script src="app.js?v=3"></script>
+  <dialog id="weeklyGoalDialog" aria-labelledby="weeklyGoalHeading">
+    <form id="weeklyGoalForm">
+      <div class="dialog-heading">
+        <h2 id="weeklyGoalHeading">Assign weekly goal</h2>
+        <button type="button" id="cancelWeeklyGoalBtn" class="btn">Cancel</button>
+      </div>
+      <p id="weeklyGoalError" class="form-error" role="alert"></p>
+      <div class="editor-grid">
+        <label class="full">Goal title<input id="weeklyGoalTitle" maxlength="180" required placeholder="e.g. Draft PEGDA hydrogel SOP" /></label>
+        <label>Researcher<select id="weeklyGoalOwner"><option value="Ashley">Ashley</option><option value="Jocelyn">Jocelyn</option></select></label>
+        <label>Week of (Monday)<input id="weeklyGoalWeek" type="date" required /></label>
+        <label>Due date (optional)<input id="weeklyGoalDue" type="date" /></label>
+        <label>Status<select id="weeklyGoalStatus"><option value="todo">Not started</option><option value="in-progress">In progress</option><option value="blocked">Blocked</option><option value="done">Done</option></select></label>
+        <label class="full">Related project (optional)<select id="weeklyGoalProject"></select></label>
+        <label class="full">Small steps, one per line<textarea id="weeklyGoalSteps" rows="5" maxlength="4000" placeholder="Identify reagents and supplies&#10;Document a literature-supported formulation&#10;Outline safety and QC checks"></textarea><span class="field-help">Unchanged steps keep their checkmarks if you edit or reorder them.</span></label>
+        <label class="full">Notes / expected deliverable<textarea id="weeklyGoalNotes" rows="3" maxlength="3000" placeholder="What should be submitted, checked, or discussed by the end of the week?"></textarea></label>
+      </div>
+      <div class="dialog-footer weekly-dialog-actions">
+        <button type="button" id="deleteWeeklyGoalBtn" class="btn danger" hidden>Delete goal</button>
+        <button type="submit" class="btn btn-primary">Save goal</button>
+      </div>
+    </form>
+  </dialog>
+  <script src="defaults.js?v=4"></script>
+  <script src="planner-model.js?v=4"></script>
+  <script src="undergrads.js?v=4"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>

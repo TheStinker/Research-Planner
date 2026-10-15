@@ -79,7 +79,7 @@ function setView(name) {
   document.querySelectorAll('[data-view-panel]').forEach(panel => panel.classList.toggle('is-active', panel.dataset.viewPanel === name));
   if (name === 'map') requestAnimationFrame(drawConnections);
 }
-function render() { renderMap(); buildTimeline(); renderFocus(); selectProject(selectedProjectId); $('undoBtn').disabled = !history.length; }
+function render() { renderMap(); buildTimeline(); renderFocus(); UndergradTasks.render(); selectProject(selectedProjectId); $('undoBtn').disabled = !history.length; }
 function renderMap() {
   $('projectNodes').replaceChildren();
   if (!state.projects.length) $('projectNodes').append(el('p', 'empty-map', 'Start your plan with + Add project.'));
@@ -256,13 +256,14 @@ function initialize() {
   $('detailStatus').addEventListener('change', event => { const next = clone(state); next.projects.find(p => p.id === selectedProjectId).status = event.target.value; commit(next); });
   $('undoBtn').addEventListener('click', () => { if (!history.length) return; state = history.pop(); if (!project()) selectedProjectId = state.projects[0]?.id; render(); saveState(); });
   $('arrangeBtn').addEventListener('click', () => commit(arrange(state), 'Map arranged by dependencies.'));
-  $('resetProgressBtn').addEventListener('click', () => { if (!confirm('Reset statuses and milestone checkboxes? Your projects, layout, dates, and dependencies will stay unchanged. You can undo this.')) return; const next = clone(state); next.projects.forEach(p => { p.status = STATUS_LABELS[p.defaultStatus] ? p.defaultStatus : 'parked'; p.milestones.forEach(m => { m.done = false; }); }); commit(next); });
+  $('resetProgressBtn').addEventListener('click', () => { if (!confirm('Reset project statuses and milestone checkboxes? Weekly undergraduate tasks, project details, dates, and layout will remain unchanged. You can undo this.')) return; const next = clone(state); next.projects.forEach(p => { p.status = STATUS_LABELS[p.defaultStatus] ? p.defaultStatus : 'parked'; p.milestones.forEach(m => { m.done = false; }); }); commit(next); });
   $('exportBtn').addEventListener('click', exportPlan); $('importBtn').addEventListener('click', () => $('importFile').click()); $('importFile').addEventListener('change', importPlan);
   const label = el('label', 'year-control', 'Calendar year '), select = el('select', ''); select.id = 'calendarYear'; select.setAttribute('aria-label', 'Calendar year');
   for (let year = 2000; year <= 2100; year++) { const option = el('option', '', year); option.value = year; select.append(option); }
   select.value = timelineYear; select.addEventListener('change', () => { timelineYear = Number(select.value); buildTimeline(); }); label.append(select); $('timelineView').insertBefore(label, $('timelineView').querySelector('.timeline-scroll'));
   document.addEventListener('keydown', event => { if (event.key === 'Escape' && drag) { event.preventDefault(); drag.cancel(); } });
   window.addEventListener('resize', () => requestAnimationFrame(drawConnections));
+  UndergradTasks.initialize();
   render(); if (startupMessage) notice(startupMessage, true);
 }
 initialize();
