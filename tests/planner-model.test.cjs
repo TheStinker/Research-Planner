@@ -117,3 +117,57 @@ test('deleting a research project retains weekly goals but clears their optional
   assert.equal(after.assignments[0].projectId,'');
   assert.equal(before.assignments[0].projectId,'a');
 });
+
+
+test('undergraduate contact emails preserve legacy plans, export data and validation', () => {
+  const old = plan([project('a')]);
+  assert.equal(model.validate(old), old);
+  const withEmail = {...old,undergradEmails:{Ashley:'ashley@example.edu',Jocelyn:'jocelyn@example.edu'}};
+  assert.equal(model.validate(withEmail), withEmail);
+  assert.deepEqual(JSON.parse(JSON.stringify(withEmail)).undergradEmails, withEmail.undergradEmails);
+  const reload = loadApp({
+    'researchPlanner.v2':JSON.stringify(withEmail),
+    'researchPlanner.addedNiamsLiteratureReview.v1':'1'
+  });
+  assert.equal(reload.read('state').undergradEmails.Ashley, 'ashley@example.edu');
+  assert.equal(reload.read('state').undergradEmails.Jocelyn, 'jocelyn@example.edu');
+  for (const invalid of ['missing-at', 'first@domain', 'evil\nBcc:example@bad.com', 'x@x.com\n']) {
+    assert.throws(() => model.validate({...old,undergradEmails:{Ashley:invalid}}));
+  }
+  assert.throws(() => model.validate({...old,undergradEmails:{NotAStudent:'someone@other.edu'}}));
+});
+
+test('weekly Gmail email includes only the selected student and week; MIME is valid base64url', () => {
+  const data = {...plan([project('hydrogel')]),
+    undergradEmails:{Ashley:'ashley@example.edu',Jocelyn:'jocelyn@example.edu'},
+    assignments:[
+      {id:'task-1',owner:'Jocelyn',week:'2026-10-12',due:'2026-10-16',
+        title:'Draft PEGDA SOP',status:'todo',projectId:'hydrogel',
+        notes:'Literature-supported reagents and photocrosslinking parameters',
+        goals:[{text:'List reagents',done:true},{text:'Write QC section',done:false}]},
+      {id:'task-2',owner:'Ashley',week:'2026-10-12',due:'',
+        title:'Design scaffold loading',status:'todo',projectId:'hydrogel',
+        notes:'Prepare a sketch',goals:[]},
+      {id:'task-3',owner:'Jocelyn',week:'2026-10-19',due:'',
+        title:'Next week only',status:'todo',projectId:'',notes:'',goals:[]}
+    ]
+  };
+  const context = vm.createContext({state:data,TextEncoder,btoa,Date});
+  vm.runInContext(fs.readFileSync(path.join(__dirname,'../undergrad-mail.js'),'utf8'),context);
+  const mail = vm.runInContext('UndergradMail',context);
+  const message = mail.messageFor('Jocelyn','2026-10-12');
+  assert.equal(message.to,'jocelyn@example.edu');
+  assert.equal(message.count,1);
+  assert.match(message.body,/PEGDA SOP/);
+  assert.match(message.body,/List reagents/);
+  assert.doesNotMatch(message.body,/Design scaffold loading|Next week only/);
+  const raw = mail.encodeMime(message);
+  assert.match(raw,/^[A-Za-z0-9_-]+$/);
+  const mime = Buffer.from(raw.replace(/-/g,'+').replace(/_/g,'/'),'base64').toString('utf8');
+  assert.match(mime,/To: jocelyn@example.edu/);
+  assert.match(mime,/Content-Type: text\/plain; charset=UTF-8/);
+  const encodedBody = mime.split('\r\n\r\n')[1];
+  const decodedBody = Buffer.from(encodedBody.replace(/\r\n/g,''),'base64').toString('utf8');
+  assert.match(decodedBody,/Draft PEGDA SOP/);
+  assert.doesNotMatch(decodedBody,/Design scaffold loading/);
+});

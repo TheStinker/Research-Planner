@@ -57,3 +57,12 @@ Choose **Undergrad weekly goals** to view two side-by-side researcher columns, w
 Assignments are stored **inside the existing research-plan JSON**, so Undo, Export plan, and Import plan include them. Previously saved research plans without an `assignments` field are fully compatible. Deleted projects clear only the optional project links on assignments. Browser-local storage does not sync with Ashley or Jocelyn: changes made on their devices are not visible on yours unless you explicitly exchange exported plans. Avoid treating these assignments as a shared portal.
 
 The goal tracker is intentionally empty until you assign work; it does not assume an undergraduate has accepted any particular task.
+
+
+## Email Ashley and Jocelyn their weekly goals
+
+In **Undergrad weekly goals**, enter the students' email addresses and save them. You can click **Review in Gmail** next to either student to open a prefilled Gmail compose page for that person's goals in the selected week. Check your sending account, recipient and content before clicking Gmail's Send button. This is the immediately usable route, and it does not automatically send until you click Send in Gmail.
+
+Optional **Send directly**: In Google Cloud Console, enable the Gmail API, configure the Google Auth Platform consent screen, and create an OAuth 2.0 Web application client whose authorized JavaScript origin is https://thestinker.github.io. Add your Gmail account as an authorized test user if the consent screen is in testing. Paste the Web client ID (not a client secret) under Optional: send directly using your Google account. Then choose **Send directly** for a student, confirm their email address and the number of goals, and authorize the intended Google account when Google prompts you. The site sends through Gmail API using the minimal gmail.send permission. Direct sends show success only after Gmail returns a message ID. Google may restrict sending from unverified applications.
+
+The site does not store access tokens or Gmail passwords. The client ID is stored in browser localStorage separate from exported plans. Recipients and assignments are stored as part of the browser-local plan and included in JSON exports, so treat the backups as personal data. No email is sent when you edit goals or save an address. Every send is initiated manually for one person and one week. Gmail compose links may not accommodate unusually long notes.

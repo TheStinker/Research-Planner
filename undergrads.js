@@ -120,6 +120,14 @@ const UndergradTasks = (() => {
       heading.append(elem('h3', '', person + ' · ' + tasks.length + (tasks.length === 1 ? ' goal' : ' goals')),
         action('+ Add goal', () => openEditor(null, person)));
       column.append(heading);
+      const mailActions = elem('div', 'undergrad-mail-actions');
+      const draftButton = action('Review in Gmail', () => UndergradMail.compose(person, selectedWeek));
+      const sendButton = action('Send directly', () => UndergradMail.send(person, selectedWeek), 'btn btn-primary');
+      draftButton.disabled = !tasks.length;
+      sendButton.disabled = !tasks.length || !UndergradMail.canSend(person);
+      sendButton.title = UndergradMail.canSend(person) ? 'Authorize and send with Gmail' : 'Save the student email and your Google OAuth client ID to enable';
+      mailActions.append(draftButton, sendButton);
+      column.append(mailActions);
       if (!tasks.length) column.append(elem('p', 'weekly-empty', 'No goals assigned for this week. Add one small, concrete deliverable.'));
       else {
         const taskList = elem('div', 'weekly-task-list');
@@ -128,6 +136,7 @@ const UndergradTasks = (() => {
       }
       columns.append(column);
     });
+    UndergradMail.render();
   }
   function openEditor(id = null, person = 'Ashley') {
     editingId = id;

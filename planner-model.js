@@ -32,6 +32,13 @@
       visiting.delete(id); visited.add(id);
     }
     state.projects.forEach(p => visit(p.id));
+    if (state.undergradEmails !== undefined) {
+      if (!state.undergradEmails || typeof state.undergradEmails !== 'object' || Array.isArray(state.undergradEmails)) throw new Error('Undergrad email addresses must be an object.');
+      const validEmail = address => typeof address === 'string' && (address === '' || (address.length <= 254 && /^[^\s@\r\n]+@[^\s@\r\n]+\.[^\s@\r\n]+$/.test(address)));
+      for (const [name, address] of Object.entries(state.undergradEmails)) {
+        if (!['Ashley', 'Jocelyn'].includes(name) || !validEmail(address)) throw new Error('Enter a valid email address for Ashley and Jocelyn.');
+      }
+    }
     if (state.assignments !== undefined) {
       if (!Array.isArray(state.assignments) || state.assignments.length > 500) throw new Error('Weekly goals must be a list of up to 500 entries.');
       const taskIds = new Set();

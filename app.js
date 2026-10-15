@@ -264,6 +264,7 @@ function initialize() {
   document.addEventListener('keydown', event => { if (event.key === 'Escape' && drag) { event.preventDefault(); drag.cancel(); } });
   window.addEventListener('resize', () => requestAnimationFrame(drawConnections));
   UndergradTasks.initialize();
+  UndergradMail.initialize();
   render(); if (startupMessage) notice(startupMessage, true);
 }
 initialize();

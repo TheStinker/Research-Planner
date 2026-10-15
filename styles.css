@@ -411,3 +411,18 @@ dialog::backdrop { background: #12141999; }
   .undergrad-columns { grid-template-columns: 1fr; }
   .weekly-toolbar .section-note { text-align: left; }
 }
+
+/* Email delivery controls */
+.undergrad-email-settings { border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel); padding: 18px; margin: 0 0 18px; }
+.undergrad-email-settings h3 { margin: 0 0 5px; }
+.undergrad-email-form, .gmail-client-form { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+.undergrad-email-form label, .gmail-client-form label { flex: 1; min-width: min(210px, 100%); font-size: .85rem; font-weight: 650; }
+.undergrad-email-form input, .gmail-client-form input { display: block; margin-top: 6px; width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--panel-soft); color: var(--text); font: inherit; }
+.gmail-direct-settings { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; }
+.gmail-direct-settings summary { cursor: pointer; font-weight: 650; font-size: .89rem; }
+.gmail-direct-settings p { margin: 12px 0; line-height: 1.5; }
+.undergrad-email-status { min-height: 18px; margin: 9px 0 0; font-size: .84rem; color: var(--muted); }
+.undergrad-email-status.is-error { color: #b04b35; }
+.undergrad-mail-actions { display: flex; gap: 8px; margin: 3px 0 15px; flex-wrap: wrap; }
+.undergrad-mail-actions .btn { font-size: .8rem; min-height: 36px; padding: 8px 11px; }
+.undergrad-mail-actions .btn:disabled { opacity: .5; cursor: not-allowed; }

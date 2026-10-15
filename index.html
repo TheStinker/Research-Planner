@@ -6,7 +6,7 @@
   <meta name="color-scheme" content="light dark" />
   <meta name="theme-color" content="#6d5dfc" />
   <title>Research Planner</title>
-  <link rel="stylesheet" href="styles.css?v=4" />
+  <link rel="stylesheet" href="styles.css?v=5" />
 </head>
 <body>
   <div class="app-shell">
@@ -148,13 +148,32 @@
           </div>
           <p class="section-note">Assign one clear outcome, then break it into checkable steps. Previous weeks remain available.</p>
         </div>
+        <section class="undergrad-email-settings" aria-label="Undergraduate email addresses">
+          <h3>Email recipients</h3>
+          <p class="field-help">Save their email addresses once. Updating goals does not automatically email anyone.</p>
+          <form id="undergradEmailForm" class="undergrad-email-form">
+            <label>Ashley's email <input id="undergradEmailAshley" type="email" autocomplete="off" maxlength="254" placeholder="ashley@example.edu" /></label>
+            <label>Jocelyn's email <input id="undergradEmailJocelyn" type="email" autocomplete="off" maxlength="254" placeholder="jocelyn@example.edu" /></label>
+            <button class="btn btn-primary" type="submit">Save addresses</button>
+          </form>
+          <details class="gmail-direct-settings">
+            <summary>Optional: send directly using your Google account</summary>
+            <p class="field-help">For direct sending, enable Gmail API in your own Google Cloud project. Create a Web OAuth client, authorize the JavaScript origin https://thestinker.github.io, and add your Google account as a test user if needed. Enter only the OAuth client ID here, never a password, API key, or client secret. Alternatively, Review in Gmail works without this setup.</p>
+            <form id="gmailClientForm" class="gmail-client-form">
+              <label>Google OAuth client ID <input id="gmailClientId" type="text" autocomplete="off" spellcheck="false" placeholder="123456789-abc.apps.googleusercontent.com" /></label>
+              <button class="btn" type="submit">Save Gmail setup</button>
+            </form>
+          </details>
+          <p class="field-help">Review in Gmail opens a ready-to-send email. Direct send asks you to confirm and authorize Google before sending.</p>
+          <p id="undergradEmailStatus" class="undergrad-email-status" role="status" aria-live="polite"></p>
+        </section>
         <div id="undergradStats" class="undergrad-stats" aria-live="polite"></div>
         <div id="undergradColumns" class="undergrad-columns"></div>
       </section>
     </main>
 
     <footer>
-      <p>Your projects, undergrad weekly assignments, positions, dependencies, dates, and progress save in this browser only. Export a plan to back it up or move it to another browser. Edits do not sync to GitHub or other devices.</p>
+      <p>Your projects, undergrad email addresses, weekly assignments, positions, dependencies, dates, and progress save in this browser only. Export a plan to back it up or move it to another browser. Edits do not sync to GitHub or other devices.</p>
     </footer>
   </div>
 
@@ -202,9 +221,11 @@
       </div>
     </form>
   </dialog>
-  <script src="defaults.js?v=4"></script>
-  <script src="planner-model.js?v=4"></script>
-  <script src="undergrads.js?v=4"></script>
-  <script src="app.js?v=4"></script>
+  <script src="defaults.js?v=5"></script>
+  <script src="planner-model.js?v=5"></script>
+  <script src="undergrads.js?v=5"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="undergrad-mail.js?v=5"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>
