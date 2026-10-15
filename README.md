@@ -2,7 +2,7 @@
 
 [Open the planner](https://thestinker.github.io/Research-Planner/)
 
-A lightweight, editable research portfolio with a dependency map, calendar, and current-focus view. The original NC-EV dissertation and side projects remain the starting plan.
+A lightweight, editable research portfolio with a dependency map, calendar, current-focus view, and **Undergrad weekly goals** for Ashley and Jocelyn. The original NC-EV dissertation and side projects remain the starting plan.
 
 The starting plan also includes a separate **NIAMS predictive bone-model literature review**. It is limited to evidence review and model definition, with no dependency on the NC-EV work and no wet-lab experiments in its current scope.
 
@@ -49,3 +49,11 @@ Run the data-integrity regression tests with Node.js:
 ```bash
 node --test tests/planner-model.test.cjs
 ```
+
+## Weekly goals for Ashley and Jocelyn
+
+Choose **Undergrad weekly goals** to view two side-by-side researcher columns, with previous/next-week navigation and weekly counts. Select **+ Assign a goal** or **+ Add goal** for either researcher. Each assignment supports a title, week, optional due date, status (Not started, In progress, Blocked, Done), linked research project, notes/expected deliverable, and checkable smaller steps. You can edit or delete goals later, and retain the history of earlier weeks. Renaming steps resets only the renamed step's completion status.
+
+Assignments are stored **inside the existing research-plan JSON**, so Undo, Export plan, and Import plan include them. Previously saved research plans without an `assignments` field are fully compatible. Deleted projects clear only the optional project links on assignments. Browser-local storage does not sync with Ashley or Jocelyn: changes made on their devices are not visible on yours unless you explicitly exchange exported plans. Avoid treating these assignments as a shared portal.
+
+The goal tracker is intentionally empty until you assign work; it does not assume an undergraduate has accepted any particular task.
